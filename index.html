@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>我的小屋</title>
+    <style>  
+      body {
+        margin: 0;
+      }
+      .container{
+            max-width:700px;
+            margin:0 auto;
+        }
+        .card{
+            background:#f9f5f9;
+            padding:24px;
+            border-radius:12px;
+            //box-shadow: 0 2px 8px #e9d9c6;
+           // margin-bottom:25px;
+        }
+
+        .item{
+            margin-bottom:14px;
+        }
+        label{
+            display:block;
+            margin-bottom:6px;
+        }
+        input,textarea{
+            width:100%;
+            padding:10px;
+            //border:1px solid #e2d2bf;
+            //border-radius:8px;
+            font-size:16px;
+        }
+    </style>
+  </head>
+  <body>
+    <div style="
+      background-color: #f9f5f9;
+      text-align: center;
+      padding: 20px;
+    ">
+      <img src='https://tse2-mm.cn.bing.net/th/id/OIP-C.lAFl1fRHcW_WAuRPNttVVwHaHa?w=181&h=181&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3' alt='lsh' width='80px' height='80px'>
+      <h3>零食小屋</h3>
+    </div>
+    <div style="
+      background-color: #f8f4f1;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 1px;
+      line-height: 1.7;
+    ">
+    <p>欢迎来到零食小屋，这里没有零食可以吃</p>
+    </div>
+    
+  <div class="container">
+        <div class="card">
+            <h2>小屋留言板</h2>
+            <div class="item">
+                <label>昵称</label>
+                <input type="text" id="name" placeholder="留下你的昵称">
+            </div>
+            <div class="item">
+                <label>留言内容</label>
+                <textarea id="content" placeholder="在这里写下留言..."></textarea>
+            </div>
+            <div>
+                <button id="submitBtn">提交留言</button>
+                <button id="clearAll">清空全部留言</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>留言列表</h2>
+            <div id="msgList">
+            </div>
+        </div>
+    </div>
+    <div></div>
+    
+    <div>
+      <a href="#bottom">跳到页面底部</a>
+      <div id="bottom">底部区域</div>
+    </div>
+<script>
+    const nameInput = document.getElementById('name');
+    const contentInput = document.getElementById('content');
+    const submitBtn = document.getElementById('submitBtn');
+    const clearAllBtn = document.getElementById('clearAll');
+    const msgList = document.getElementById('msgList');
+
+    function getMessages(){
+        let data = localStorage.getItem("messageBoard");
+        if(data){
+            return JSON.parse(data);
+        }else{
+            return [];
+        }
+    }
+    function saveMessages(arr){
+        localStorage.setItem("messageBoard", JSON.stringify(arr));
+    }
+
+    function render(){
+        let list = getMessages();
+        msgList.innerHTML = "";
+        list.forEach(item=>{
+            let div = document.createElement("div");
+            div.className = "msg-item";
+            div.innerHTML = `
+                <div class="msg-name">${item.name}</div>
+                <div class="msg-time">${item.time}</div>
+                <div class="msg-content">${item.content}</div>
+            `
+            msgList.appendChild(div);
+        })
+    }
+
+    submitBtn.onclick = function(){
+        let name = nameInput.value.trim();
+        let content = contentInput.value.trim();
+        if(!name || !content){
+            alert("昵称和留言不能为空！");
+            return;
+        }
+        let time = new Date().toLocaleString();
+        let msgArr = getMessages();
+        msgArr.unshift({name,content,time}); 
+        saveMessages(msgArr);
+        render();
+        nameInput.value = "";
+        contentInput.value = "";
+    }
+
+    clearAllBtn.onclick = function(){
+        if(confirm("确定清空所有留言吗？此操作不可恢复！")){
+            localStorage.removeItem("messageBoard");
+            render();
+        }
+    }
+
+    render();
+</script>
+  </body>
+</html>
