@@ -92,8 +92,10 @@
     </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
+    // ========= 把这里替换成你的信息 =========
+    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.coL";
     const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
+    // ======================================
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const nameInput = document.getElementById('name');
@@ -102,7 +104,9 @@
     const clearAllBtn = document.getElementById('clearAll');
     const msgList = document.getElementById('msgList');
 
+    // 加载云端留言
     async function render(){
+        // 按时间倒序，最新留言在最上面
         const {data, error} = await supabase
             .from("messages")
             .select("*")
@@ -125,6 +129,7 @@
         })
     }
 
+    // 提交留言到supabase
     submitBtn.onclick = async function(){
         let name = nameInput.value.trim();
         let content = contentInput.value.trim();
@@ -140,10 +145,11 @@
         }else{
             nameInput.value = "";
             contentInput.value = "";
-            render(); 
+            render(); // 提交成功刷新留言列表
         }
     }
 
+    // 清空全部留言（⚠️所有人的留言都会删掉！谨慎使用）
     clearAllBtn.onclick = async function(){
         if(confirm("确定清空所有留言吗？所有人的留言都会删除！不可恢复！")){
             const {error} = await supabase.from("messages").delete().neq("id", 0);
@@ -152,6 +158,7 @@
         }
     }
 
+    // 页面打开自动加载留言
     render();
 </script>
   </body>
