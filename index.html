@@ -92,11 +92,12 @@
     </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ========= 把这里替换成你的信息 =========
-    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.coL";
+    // ========= 修正URL！删掉末尾多余L =========
+    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
     // ======================================
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // 变量改成 client，不再使用supabase命名，规避全局名字冲突
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const nameInput = document.getElementById('name');
     const contentInput = document.getElementById('content');
@@ -106,8 +107,7 @@
 
     // 加载云端留言
     async function render(){
-        // 按时间倒序，最新留言在最上面
-        const {data, error} = await supabase
+        const {data, error} = await client
             .from("messages")
             .select("*")
             .order("created_at", {ascending: false});
@@ -137,7 +137,7 @@
             alert("昵称和留言不能为空！");
             return;
         }
-        const {error} = await supabase
+        const {error} = await client
             .from("messages")
             .insert([{name, content}]);
         if(error){
@@ -145,20 +145,19 @@
         }else{
             nameInput.value = "";
             contentInput.value = "";
-            render(); // 提交成功刷新留言列表
+            render();
         }
     }
 
-    // 清空全部留言（⚠️所有人的留言都会删掉！谨慎使用）
+    // 清空全部留言
     clearAllBtn.onclick = async function(){
         if(confirm("确定清空所有留言吗？所有人的留言都会删除！不可恢复！")){
-            const {error} = await supabase.from("messages").delete().neq("id", 0);
+            const {error} = await client.from("messages").delete().neq("id", 0);
             if(!error) render();
             else alert("清空失败："+error.message);
         }
     }
 
-    // 页面打开自动加载留言
     render();
 </script>
   </body>
