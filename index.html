@@ -16,7 +16,10 @@
             background:#f9f5f9;
             padding:24px;
             border-radius:12px;
+            //box-shadow: 0 2px 8px #e9d9c6;
+           // margin-bottom:25px;
         }
+
         .item{
             margin-bottom:14px;
         }
@@ -27,24 +30,14 @@
         input,textarea{
             width:100%;
             padding:10px;
+            //border:1px solid #e2d2bf;
+            //border-radius:8px;
             font-size:16px;
-        }
-        .msg-item{
-            border-bottom:1px solid #ddd;
-            padding:10px 0;
-        }
-        .msg-name{
-            font-weight:bold;
-        }
-        .msg-time{
-            font-size:13px;
-            color:#666;
-            margin:4px 0;
         }
     </style>
   </head>
   <body>
-    <div id="top">顶部区域</div>
+    <div id="top"></div>
     <div style="
       background-color: #f9f5f9;
       text-align: center;
@@ -54,7 +47,7 @@
       <h3>零食小屋</h3>
     </div>
     <div style="
-      background-color: #f8f4f1;
+      background-color: #f9f5f9;
       max-width: 700px;
       margin: 30px auto;
       padding: 1px;
@@ -67,18 +60,19 @@
         <div class="card">
             <h2>小屋留言板</h2>
             <div class="item">
-                <label>昵称</label>
-                <input type="text" id="name" placeholder="留下你的昵称">
-            </div>
-            <div class="item">
-                <label>留言内容</label>
-                <textarea id="content" placeholder="在这里写下留言..."></textarea>
-            </div>
+    <label>✨虚拟昵称（用于现在对外展示）</label>
+    <input type="text" id="nickname" placeholder="起一个好玩的匿名昵称">
+</div>
+<div class="item">
+    <label>🔒真实姓名（3天后揭晓哦！）</label>
+    <input type="text" id="realname" placeholder="填写你的真实姓名">
+</div>
+
             <div>
                 <button id="submitBtn">提交留言</button>
-                <button id="clearAll">清空全部留言</button>
             </div>
         </div>
+
         <div class="card">
             <h2>留言列表</h2>
             <div id="msgList">
@@ -89,25 +83,23 @@
     
     <div>
       <a href="#top">跳到页面顶部</a>
+      
     </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ========= 修正URL！删掉末尾多余L =========
-    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
-    // ======================================
-    // 变量改成 client，不再使用supabase命名，规避全局名字冲突
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const BIN_ID = "6ac91150ffd5d160535cb594"; 
+    const API_KEY = "$2a$10$KkNJBEuwfqLitWNXE5G1auucdowT62sFO5sUd9Znm773JscOjo4ru";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const nameInput = document.getElementById('name');
+    const nicknameInput = document.getElementById('nickname');
+    const realnameInput = document.getElementById('realname');
     const contentInput = document.getElementById('content');
     const submitBtn = document.getElementById('submitBtn');
-    const clearAllBtn = document.getElementById('clearAll');
     const msgList = document.getElementById('msgList');
 
-    // 加载云端留言
+    const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
+
     async function render(){
-        const {data, error} = await client
+        const {data, error} = await supabase
             .from("messages")
             .select("*")
             .order("created_at", {ascending: false});
@@ -117,11 +109,27 @@
             return;
         }
         msgList.innerHTML = "";
+        const now = Date.now();
+
         data.forEach(item=>{
             let div = document.createElement("div");
             div.className = "msg-item";
+
+            let showName;
+            if (!item.nickname) {
+                showName = item.name + "（旧留言）";
+            } else {
+                const createTime = new Date(item.created_at).getTime();
+                const diff = now - createTime;
+                if(diff >= THREE_DAY_MS){
+                    showName = item.realname + "（身份已揭晓）";
+                }else{
+                    showName = item.nickname + "（匿名中，等待揭晓）";
+                }
+            }
+
             div.innerHTML = `
-                <div class="msg-name">${item.name}</div>
+                <div class="msg-name">${showName}</div>
                 <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
                 <div class="msg-content">${item.content}</div>
             `
@@ -129,32 +137,25 @@
         })
     }
 
-    // 提交留言到supabase
     submitBtn.onclick = async function(){
-        let name = nameInput.value.trim();
+        let nickname = nicknameInput.value.trim();
+        let realname = realnameInput.value.trim();
         let content = contentInput.value.trim();
-        if(!name || !content){
-            alert("昵称和留言不能为空！");
+
+        if(!nickname || !realname || !content){
+            alert("虚拟昵称、真实姓名、留言内容都不能为空！");
             return;
         }
-        const {error} = await client
+        const {error} = await supabase
             .from("messages")
-            .insert([{name, content}]);
+            .insert([{ nickname, realname, content }]);
         if(error){
             alert("提交失败：" + error.message);
         }else{
-            nameInput.value = "";
+            nicknameInput.value = "";
+            realnameInput.value = "";
             contentInput.value = "";
             render();
-        }
-    }
-
-    // 清空全部留言
-    clearAllBtn.onclick = async function(){
-        if(confirm("确定清空所有留言吗？所有人的留言都会删除！不可恢复！")){
-            const {error} = await client.from("messages").delete().neq("id", 0);
-            if(!error) render();
-            else alert("清空失败："+error.message);
         }
     }
 
