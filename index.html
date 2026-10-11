@@ -6,52 +6,115 @@
     <title>我的小屋</title>
     <style>  
       body {
-        margin: 0;
-      }
-      .container{
-            max-width:700px;
-            margin:0 auto;
-        }
-        .card{
-            background:#f9f5f9;
-            padding:24px;
-            border-radius:12px;
-            box-shadow: 0 2px 8px #e9d9c6;
-           margin-bottom:25px;
-        }
+  margin: 0;
+  background-color: #f9f5f9;
+}
+.container{
+      max-width:700px;
+      margin:0 auto;
+  }
+  .card{
+      background:#f9f5f9;
+      padding:24px;
+      border-radius:12px;
+      box-shadow: 0 2px 8px rgba(130,115,105,0.1);
+     margin-bottom:25px;
+  }
+  .item{
+      margin-bottom:14px;
+  }
+  label{
+      display:block;
+      margin-bottom:6px;
+      color:#5c524b;
+  }
+  input,textarea{
+      width:100%;
+      padding:10px;
+      border:1px solid #d9ccc2;
+      border-radius:8px;
+      font-size:16px;
+      background:#fff;
+      color:#443c37;
+  }
+  input:focus,textarea:focus{
+      outline: none;
+      border-color:#b8a89a;
+  }
 
-        .item{
-            margin-bottom:14px;
-        }
-        label{
-            display:block;
-            margin-bottom:6px;
-        }
-        input,textarea{
-            width:100%;
-            padding:10px;
-            border:1px solid #e2d2bf;
-            border-radius:8px;
-            font-size:16px;
-        }
-      .msg-item{
-    background: #fff;
+  button#submitBtn{
+    padding:9px 16px;
+    border:none;
+    border-radius:8px;
+    background:#d4c5c3;
+    color:#fff;
+    cursor:pointer;
+    font-size:15px;
+    transition: 0.2s;
+}
+
+button#submitBtn:hover{
+    background:#c0b0ae;
+}
+
+.tab-btn{
+    padding:8px 14px;
+    border:none;
+    border-radius:8px;
+    margin-right:8px;
+    background:#ece6e6;
+    color:#5b5150;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.tab-btn:hover{
+    background:#ddd2d1;
+}
+
+.tab-btn.active{
+    background:#d4c5c3;
+    color:#ffffff;
+}
+
+input,textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #e2d5d3;
+    border-radius:8px;
+    font-size:16px;
+    background:#fff;
+    color:#5b5150;
+}
+
+input:focus,textarea:focus{
+    outline: none;
+    border-color:#c9b7b4;
+}
+
+.msg-item{
+    background: #fbf7f7;
     border-radius: 14px;
     padding:16px;
     margin-bottom:14px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 6px rgba(180, 160, 158, 0.08);
 }
+
 .msg-name{
     font-weight:bold;
     margin-bottom:6px;
+    color:#5b5150;
 }
+
 .msg-time{
     font-size:12px;
-    color:#888;
+    color:#a79997;
     margin-bottom:8px;
 }
+
 .msg-content{
     line-height:1.6;
+    color:#5b5150;
 }
 
     </style>
@@ -73,18 +136,25 @@
     </div>
     <div class="container">
         <div class="card">
-    <p>欢迎来到零食小屋，这里没有零食可以吃</p>
+    <p>欢迎来到零食小屋，不要偷吃零食！！！</p>
     </div>
     
-  <div class="container">
         <div class="card">
-            <h2>小屋留言板</h2>
-            <div class="item">
-    <label>✨虚拟昵称（用于现在对外展示）</label>
+            <h3>小屋留言板</h3>
+<div class="item">
+  <label>选择板块</label>
+  <select id="categorySelect">
+    <option value="sheep">羊村</option>
+    <option value="food">美食街</option>
+    <option value="soul">许愿池</option>
+  </select>
+</div>
+<div class="item">
+    <label>虚拟昵称（请乱取名！）</label>
     <input type="text" id="nickname" placeholder="起一个好玩的匿名昵称">
 </div>
 <div class="item">
-    <label>🔒真实姓名（3天后揭晓哦！）</label>
+    <label>真实姓名（写个我能认出的昵称吧，总之3天后揭晓哦）</label>
     <input type="text" id="realname" placeholder="填写你的真实姓名">
 </div>
 <div class="item">
@@ -95,22 +165,25 @@
                 <button id="submitBtn">提交留言</button>
             </div>
         </div>
-
         <div class="card">
-            <h2>留言列表</h2>
+            <h3>留言列表</h3>
+            <div class="tab-group">
+              <button class="tab-btn" data-filter="">全部留言</button>
+              <button class="tab-btn" data-filter="sheep">羊村</button>
+              <button class="tab-btn" data-filter="food">美食街</button>
+              <button class="tab-btn" data-filter="soul">许愿池</button>
+            </div>
             <div id="msgList">
             </div>
         </div>
     </div>
-    <div></div>
     
     <div>
       <a href="#top">跳到页面顶部</a>
-      
     </div>
+
 <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
     const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -120,7 +193,30 @@
     const contentInput = document.getElementById('content');
     const submitBtn = document.getElementById('submitBtn');
     const msgList = document.getElementById('msgList');
+    const categorySelect = document.getElementById('categorySelect');
     const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
+
+    let currentFilter = "";
+
+    function updateTabActive(){
+        document.querySelectorAll('.tab-btn').forEach(btn=>{
+            if(btn.dataset.filter === currentFilter){
+                btn.classList.add('active')
+            }else{
+                btn.classList.remove('active')
+            }
+        })
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn=>{
+        btn.onclick = function(){
+            currentFilter = this.dataset.filter;
+            render();
+            updateTabActive();
+        }
+    })
+
+
 
     async function render(){
         const {data, error} = await supabase
@@ -136,45 +232,59 @@
         }
         msgList.innerHTML = "";
         const now = Date.now();
+        // 筛选板块
+        let filteredData = data;
+        if(currentFilter !== ""){
+            filteredData = data.filter(item => item.category === currentFilter);
+        }
 
-        data.forEach(item=>{
+        filteredData.forEach(item=>{
             let div = document.createElement("div");
             div.className = "msg-item";
-
+            let categoryText = "";
+            if(item.category === "sheep") categoryText = "【羊村】";
+            if(item.category === "food") categoryText = "【美食街】";
+            if(item.category === "soul") categoryText = "【许愿池】";
             let showName;
             if (!item.nickname) {
-                showName = (item.name || "匿名") + "（旧留言）";
+                showName = (item.name || "匿名") + "（旧留言）" + categoryText;
             } else {
                 const createTime = new Date(item.created_at).getTime();
                 const diff = now - createTime;
                 if(diff >= THREE_DAY_MS){
-                    showName = item.realname + "（已揭晓）";
+                    showName = `${item.nickname}（${item.realname}）` + categoryText;
                 }else{
-                    showName = item.nickname + "（匿名中）";
+                    showName = item.nickname + "（匿名中）" + categoryText;
                 }
             }
-
-           div.innerHTML = `
-              <div class="msg-name">${showName}</div>
-              <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
-              <div class="msg-content">${item.content}</div>
-           `
+            div.innerHTML = `
+             <div class="msg-name">${showName}</div>
+             <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
+             <div class="msg-content">${item.content}</div>
+            `
             msgList.appendChild(div);
         })
+        updateTabActive();
+
     }
+    
 
     submitBtn.onclick = async function(){
         let nickname = nicknameInput.value.trim();
         let realname = realnameInput.value.trim();
         let content = contentInput.value.trim();
-
         if(!nickname || !realname || !content){
             alert("虚拟昵称、真实姓名、留言内容都不能为空！");
             return;
         }
         const {error} = await supabase
             .from("messages")
-            .insert([{ nickname, realname, content }]);
+            .insert([{ 
+                nickname, 
+                realname, 
+                content,
+                category: categorySelect.value 
+            }]);
         if(error){
             alert("提交失败：" + error.message);
         }else{
@@ -185,6 +295,7 @@
         }
     }
     render();
+    updateTabActive();
 </script>
   </body>
 </html>
