@@ -148,9 +148,9 @@
                 const createTime = new Date(item.created_at).getTime();
                 const diff = now - createTime;
                 if(diff >= THREE_DAY_MS){
-                    showName = item.realname + "（身份已揭晓）";
+                    showName = item.realname + "（已揭晓）";
                 }else{
-                    showName = item.nickname + "（匿名中，等待揭晓）";
+                    showName = item.nickname + "（匿名中）";
                 }
             }
 
