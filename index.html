@@ -102,45 +102,48 @@
     const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
 
     async function render(){
-        const {data, error} = await supabase
-            .from("messages")
-            .select("*")
-            .order("created_at", {ascending: false});
-        if(error){
-            console.error(error);
-            alert("读取留言失败！");
-            return;
-        }
-        msgList.innerHTML = "";
-        const now = Date.now();
-
-data.forEach(item=>{
-    let div = document.createElement("div");
-    div.className = "msg-item";
-
-    let showName;
-    // 兼容旧留言：没有nickname就用原来的name，兜底防止空白
-    if (!item.nickname) {
-        showName = (item.name || "匿名") + "（旧留言）";
-    } else {
-        //新留言3天倒计时逻辑
-        const createTime = new Date(item.created_at).getTime();
-        const diff = now - createTime;
-        const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
-        if(diff >= THREE_DAY_MS){
-            showName = item.realname + "（身份已揭晓）";
-        }else{
-            showName = item.nickname + "（匿名中，等待揭晓）";
-        }
+    const {data, error} = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", {ascending: false});
+    console.log("拿到的数据：", data);
+    console.log("错误：", error);
+    if(error){
+        console.error(error);
+        alert("读取留言失败！");
+        return;
     }
+    msgList.innerHTML = "";
+    const now = Date.now();
 
-    div.innerHTML = `
-        <div class="msg-name">${showName}</div>
-        <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
-        <div class="msg-content">${item.content}</div>
-    `
-    msgList.appendChild(div);
-})
+    data.forEach(item=>{
+        let div = document.createElement("div");
+        div.className = "msg-item";
+
+        let showName;
+        // 兼容旧留言：没有nickname就读取原来的name，兜底防止空白
+        if (!item.nickname) {
+            showName = (item.name || "匿名") + "（旧留言）";
+        } else {
+            //新留言3天倒计时逻辑
+            const createTime = new Date(item.created_at).getTime();
+            const diff = now - createTime;
+            const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
+            if(diff >= THREE_DAY_MS){
+                showName = item.realname + "（身份已揭晓）";
+            }else{
+                showName = item.nickname + "（匿名中，等待揭晓）";
+            }
+        }
+
+        div.innerHTML = `
+            <div class="msg-name">${showName}</div>
+            <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
+            <div class="msg-content">${item.content}</div>
+        `
+        msgList.appendChild(div);
+    })
+}
 
 
     submitBtn.onclick = async function(){
