@@ -147,6 +147,7 @@ input:focus,textarea:focus{
     <option value="sheep">羊村</option>
     <option value="food">美食街</option>
     <option value="soul">许愿池</option>
+    <option value="cos">cos区</option>
   </select>
 </div>
 <div class="item">
@@ -172,6 +173,7 @@ input:focus,textarea:focus{
               <button class="tab-btn" data-filter="sheep">羊村</button>
               <button class="tab-btn" data-filter="food">美食街</button>
               <button class="tab-btn" data-filter="soul">许愿池</button>
+              <button class="tab-btn" data-filter="cos">cos区</button>
             </div>
             <div id="msgList">
             </div>
@@ -245,6 +247,7 @@ input:focus,textarea:focus{
             if(item.category === "sheep") categoryText = "【羊村】";
             if(item.category === "food") categoryText = "【美食街】";
             if(item.category === "soul") categoryText = "【许愿池】";
+            if(item.category === "cos") categoryText = "【cos区】";
             let showName;
             if (!item.nickname) {
                 showName = (item.name || "匿名") + "（旧留言）" + categoryText;
