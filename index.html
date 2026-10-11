@@ -34,6 +34,26 @@
             //border-radius:8px;
             font-size:16px;
         }
+      .msg-item{
+    background: #fff;
+    border-radius: 14px;
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.msg-name{
+    font-weight:bold;
+    margin-bottom:6px;
+}
+.msg-time{
+    font-size:12px;
+    color:#888;
+    margin-bottom:8px;
+}
+.msg-content{
+    line-height:1.6;
+}
+
     </style>
   </head>
   <body>
@@ -134,11 +154,11 @@
                 }
             }
 
-            div.innerHTML = `
-                <div class="msg-name">${showName}</div>
-                <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
-                <div class="msg-content">${item.content}</div>
-            `
+           div.innerHTML = `
+              <div class="msg-name">${showName}</div>
+              <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
+              <div class="msg-content">${item.content}</div>
+           `
             msgList.appendChild(div);
         })
     }
