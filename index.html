@@ -6,8 +6,8 @@
     <title>我的小屋</title>
     <style>  
       body {
-  margin: 0;
-  background-color: #f9f5f9;
+ margin: 0;
+ background-color: #f9f5f9;
 }
 .container{
       max-width:700px;
@@ -41,7 +41,6 @@
       outline: none;
       border-color:#b8a89a;
   }
-
   button#submitBtn{
     padding:9px 16px;
     border:none;
@@ -52,11 +51,9 @@
     font-size:15px;
     transition: 0.2s;
 }
-
 button#submitBtn:hover{
     background:#c0b0ae;
 }
-
 .tab-btn{
     padding:8px 14px;
     border:none;
@@ -67,16 +64,13 @@ button#submitBtn:hover{
     cursor:pointer;
     transition:0.2s;
 }
-
 .tab-btn:hover{
     background:#ddd2d1;
 }
-
 .tab-btn.active{
     background:#d4c5c3;
     color:#ffffff;
 }
-
 input,textarea{
     width:100%;
     padding:10px;
@@ -86,12 +80,10 @@ input,textarea{
     background:#fff;
     color:#5b5150;
 }
-
 input:focus,textarea:focus{
     outline: none;
     border-color:#c9b7b4;
 }
-
 .msg-item{
     background: #fbf7f7;
     border-radius: 14px;
@@ -99,24 +91,72 @@ input:focus,textarea:focus{
     margin-bottom:14px;
     box-shadow: 0 2px 6px rgba(180, 160, 158, 0.08);
 }
-
 .msg-name{
     font-weight:bold;
     margin-bottom:6px;
     color:#5b5150;
 }
-
 .msg-time{
     font-size:12px;
     color:#a79997;
     margin-bottom:8px;
 }
-
 .msg-content{
     line-height:1.6;
     color:#5b5150;
 }
 
+.reply-block{
+    margin-top:12px;
+    padding:10px 14px;
+    background:#f3eeed;
+    border-radius:8px;
+}
+.reply-name{
+    font-weight:bold;
+    font-size:14px;
+    color:#5b5150;
+}
+.reply-time{
+    font-size:11px;
+    color:#a79997;
+    margin:3px 0 4px;
+}
+.reply-content{
+    font-size:14px;
+    color:#5b5150;
+}
+.replyBtn{
+    margin-top:10px;
+    padding:4px 10px;
+    font-size:13px;
+    border:none;
+    border-radius:6px;
+    background:#ece6e6;
+    color:#5b5150;
+    cursor:pointer;
+    transition:0.2s;
+}
+.replyBtn:hover{
+    background:#ddd2d1;
+}
+
+#replyModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.15);
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+#replyModal textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #e2d5d3;
+    border-radius:8px;
+    min-height:80px;
+}
     </style>
   </head>
   <body>
@@ -155,7 +195,7 @@ input:focus,textarea:focus{
     <input type="text" id="nickname" placeholder="起一个好玩的匿名昵称">
 </div>
 <div class="item">
-    <label>真实姓名（写个我能认出的昵称吧，总之3天后揭晓哦）</label>
+    <label>真实昵称（3天后揭晓哦）</label>
     <input type="text" id="realname" placeholder="填写你的真实姓名">
 </div>
 <div class="item">
@@ -170,10 +210,11 @@ input:focus,textarea:focus{
             <h3>留言列表</h3>
             <div class="tab-group">
               <button class="tab-btn" data-filter="">全部留言</button>
-              <button class="tab-btn" data-filter="sheep">羊村</button>
               <button class="tab-btn" data-filter="food">美食街</button>
-              <button class="tab-btn" data-filter="soul">许愿池</button>
+              <button class="tab-btn" data-filter="sheep">羊村</button>
               <button class="tab-btn" data-filter="cos">cos区</button>
+              <button class="tab-btn" data-filter="soul">许愿池</button>
+              
             </div>
             <div id="msgList">
             </div>
@@ -183,6 +224,26 @@ input:focus,textarea:focus{
     <div>
       <a href="#top">跳到页面顶部</a>
     </div>
+
+
+<div id="replyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;z-index:999;">
+  <div style="background:#fff;padding:20px;border-radius:12px;width:90%;max-width:500px;">
+    <h4>回复这条留言</h4>
+    <div class="item">
+        <label>回复虚拟昵称</label>
+        <input type="text" id="replyNickname" placeholder="你的虚拟昵称">
+    </div>
+    <div class="item">
+        <label>回复真实昵称（3天后揭晓）</label>
+        <input type="text" id="replyRealname" placeholder="填写真实昵称">
+    </div>
+    <textarea id="replyText" style="width:100%;padding:10px;border:1px solid #e2d5d3;border-radius:8px;min-height:80px;" placeholder="写下回复内容"></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px;">
+      <button id="sendReplyBtn">提交回复</button>
+      <button id="closeReplyBtn">取消</button>
+    </div>
+  </div>
+</div>
 
 <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
@@ -197,8 +258,16 @@ input:focus,textarea:focus{
     const msgList = document.getElementById('msgList');
     const categorySelect = document.getElementById('categorySelect');
     const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
-
     let currentFilter = "";
+
+
+    const replyModal = document.getElementById('replyModal');
+    const replyNicknameInput = document.getElementById('replyNickname');
+    const replyRealnameInput = document.getElementById('replyRealname');
+    const replyText = document.getElementById('replyText');
+    const sendReplyBtn = document.getElementById('sendReplyBtn');
+    const closeReplyBtn = document.getElementById('closeReplyBtn');
+    let replyingToId = null;
 
     function updateTabActive(){
         document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -209,7 +278,7 @@ input:focus,textarea:focus{
             }
         })
     }
-
+    
     document.querySelectorAll('.tab-btn').forEach(btn=>{
         btn.onclick = function(){
             currentFilter = this.dataset.filter;
@@ -219,6 +288,43 @@ input:focus,textarea:focus{
     })
 
 
+    function openReplyModal(mainId){
+        replyingToId = mainId;
+        replyNicknameInput.value = "";
+        replyRealnameInput.value = "";
+        replyText.value = "";
+        replyModal.style.display = "flex";
+    }
+
+    function closeReplyModal(){
+        replyingToId = null;
+        replyModal.style.display = "none";
+    }
+    closeReplyBtn.onclick = closeReplyModal;
+
+
+    sendReplyBtn.onclick = async function(){
+        const rNick = replyNicknameInput.value.trim();
+        const rReal = replyRealnameInput.value.trim();
+        const rContent = replyText.value.trim();
+        if(!rNick || !rReal || !rContent){
+            alert("虚拟昵称、真实昵称、回复内容不能为空！");
+            return;
+        }
+        const {error} = await supabase.from("messages").insert([{
+            nickname: rNick,
+            realname: rReal,
+            content: rContent,
+            category: "",
+            reply_to: replyingToId
+        }])
+        if(error){
+            alert("回复失败："+error.message)
+        }else{
+            closeReplyModal();
+            render();
+        }
+    }
 
     async function render(){
         const {data, error} = await supabase
@@ -234,13 +340,16 @@ input:focus,textarea:focus{
         }
         msgList.innerHTML = "";
         const now = Date.now();
-        // 筛选板块
+
         let filteredData = data;
         if(currentFilter !== ""){
             filteredData = data.filter(item => item.category === currentFilter);
         }
 
+        //只渲染主留言（reply_to为空）
         filteredData.forEach(item=>{
+            if(item.reply_to) return;
+
             let div = document.createElement("div");
             div.className = "msg-item";
             let categoryText = "";
@@ -260,24 +369,53 @@ input:focus,textarea:focus{
                     showName = item.nickname + "（匿名中）" + categoryText;
                 }
             }
+
+
+            const replies = data.filter(r => r.reply_to === item.id);
+            let replyHtml = "";
+            replies.forEach(reply=>{
+                let replyShowName;
+                const replyCreateTime = new Date(reply.created_at).getTime();
+                const replyDiff = now - replyCreateTime;
+                if(replyDiff >= THREE_DAY_MS){
+                    replyShowName = `${reply.nickname}（${reply.realname}）`;
+                }else{
+                    replyShowName = reply.nickname + "（匿名中）";
+                }
+                replyHtml += `
+                <div class="reply-block">
+                    <div class="reply-name">${replyShowName}</div>
+                    <div class="reply-time">${new Date(reply.created_at).toLocaleString()}</div>
+                    <div class="reply-content">${reply.content}</div>
+                </div>
+                `
+            })
+
             div.innerHTML = `
              <div class="msg-name">${showName}</div>
              <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
              <div class="msg-content">${item.content}</div>
+             <button class="replyBtn" data-id="${item.id}">回复</button>
+             ${replyHtml}
             `
             msgList.appendChild(div);
         })
-        updateTabActive();
 
+
+        document.querySelectorAll('.replyBtn').forEach(btn=>{
+            btn.onclick = function(){
+                openReplyModal(this.dataset.id)
+            }
+        })
+        updateTabActive();
     }
     
-
     submitBtn.onclick = async function(){
         let nickname = nicknameInput.value.trim();
         let realname = realnameInput.value.trim();
         let content = contentInput.value.trim();
         if(!nickname || !realname || !content){
-            alert("虚拟昵称、真实姓名、留言内容都不能为空！");
+            alert("虚拟昵称、真实昵称、留言内容都不能为空！");
             return;
         }
         const {error} = await supabase
