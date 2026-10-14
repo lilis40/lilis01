@@ -1,445 +1,236 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>我的小屋</title>
-    <style>  
-      body {
- margin: 0;
- background-color: #f9f5f9;
-}
-.container{
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的小屋</title>
+  <style>    
+    body {
+      margin: 0;
+      background-color: #f9f5f9;
+      font-family: system-ui, sans-serif;
+    }
+    .container{
       max-width:700px;
       margin:0 auto;
-  }
-  .card{
-      background:#f9f5f9;
+      padding: 20px;
+    }
+    #homePage{
+      min-height: 100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .enter-btn{
+      background:#d8cfd8;
+      border:none;
+      color:#4a4a4a;
+      padding:14px 32px;
+      border-radius:99px;
+      font-size:16px;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .enter-btn:hover{
+      background:#c9bcc9;
+    }
+    #messagePage{
+      display:none;
+    }
+    .card{
+      background:#fff;
       padding:24px;
       border-radius:12px;
-      box-shadow: 0 2px 8px rgba(130,115,105,0.1);
-     margin-bottom:25px;
-  }
-  .item{
-      margin-bottom:14px;
-  }
-  label{
-      display:block;
-      margin-bottom:6px;
-      color:#5c524b;
-  }
-  input,textarea{
-      width:100%;
-      padding:10px;
-      border:1px solid #d9ccc2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom:16px;
+    }
+    .msg-bubble{
+      background:#f1ecf1;
+      border-radius:10px;
+      padding:16px;
+      margin-bottom:12px;
+    }
+    .back-btn{
+      background:#e2d9e2;
+      border:none;
+      color:#4a4a4a;
+      padding:8px 16px;
       border-radius:8px;
-      font-size:16px;
-      background:#fff;
-      color:#443c37;
-  }
-  input:focus,textarea:focus{
-      outline: none;
-      border-color:#b8a89a;
-  }
-  button#submitBtn{
-    padding:9px 16px;
-    border:none;
-    border-radius:8px;
-    background:#d4c5c3;
-    color:#fff;
-    cursor:pointer;
-    font-size:15px;
-    transition: 0.2s;
-}
-button#submitBtn:hover{
-    background:#c0b0ae;
-}
-.tab-btn{
-    padding:8px 14px;
-    border:none;
-    border-radius:8px;
-    margin-right:8px;
-    background:#ece6e6;
-    color:#5b5150;
-    cursor:pointer;
-    transition:0.2s;
-}
-.tab-btn:hover{
-    background:#ddd2d1;
-}
-.tab-btn.active{
-    background:#d4c5c3;
-    color:#ffffff;
-}
-input,textarea{
-    width:100%;
-    padding:10px;
-    border:1px solid #e2d5d3;
-    border-radius:8px;
-    font-size:16px;
-    background:#fff;
-    color:#5b5150;
-}
-input:focus,textarea:focus{
-    outline: none;
-    border-color:#c9b7b4;
-}
-.msg-item{
-    background: #fbf7f7;
-    border-radius: 14px;
-    padding:16px;
-    margin-bottom:14px;
-    box-shadow: 0 2px 6px rgba(180, 160, 158, 0.08);
-}
-.msg-name{
-    font-weight:bold;
-    margin-bottom:6px;
-    color:#5b5150;
-}
-.msg-time{
-    font-size:12px;
-    color:#a79997;
-    margin-bottom:8px;
-}
-.msg-content{
-    line-height:1.6;
-    color:#5b5150;
-}
-/*回复气泡样式*/
-.reply-block{
-    margin-top:12px;
-    padding:10px 14px;
-    background:#f3eeed;
-    border-radius:8px;
-}
-.reply-name{
-    font-weight:bold;
-    font-size:14px;
-    color:#5b5150;
-}
-.reply-time{
-    font-size:11px;
-    color:#a79997;
-    margin:3px 0 4px;
-}
-.reply-content{
-    font-size:14px;
-    color:#5b5150;
-}
-.replyBtn{
-    margin-top:10px;
-    padding:4px 10px;
-    font-size:13px;
-    border:none;
-    border-radius:6px;
-    background:#ece6e6;
-    color:#5b5150;
-    cursor:pointer;
-    transition:0.2s;
-}
-.replyBtn:hover{
-    background:#ddd2d1;
-}
-/*弹窗样式*/
-#replyModal{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.15);
-    align-items:center;
-    justify-content:center;
-    z-index:999;
-}
-#replyModal.open{
-    display:flex;
-}
-#replyModal textarea{
-    width:100%;
-    padding:10px;
-    border:1px solid #e2d5d3;
-    border-radius:8px;
-    min-height:80px;
-}
-    </style>
-  </head>
-  <body>
-    <div id="top"></div>
-    <div style="
-      background-color: #f9f5f9;
-      text-align: center;
-      padding: 20px;
-      max-width:700px;
-      margin:0 auto;
+      cursor:pointer;
+      margin-bottom:20px;
+    }
+    input, textarea, select{
+      width:100%;
+      box-sizing:border-box;
+      padding:10px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      margin:6px 0;
+    }
+    .submit-btn{
+      background:#d8cfd8;
+      border:none;
+      padding:10px 20px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    #replyModal{
+      display:none;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.2);
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-inner{
+      background:white;
+      padding:24px;
       border-radius:12px;
-      box-shadow: 0 2px 8px #e9d9c6;
-      margin-bottom:25px;
-    ">
-      <img src='https://tse2-mm.cn.bing.net/th/id/OIP-C.lAFl1fRHcW_WAuRPNttVVwHaHa?w=181&h=181&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3' alt='lsh' width='80px' height='80px'>
-      <h3>零食小屋</h3>
+      max-width:500px;
+      width:90%;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div id="homePage">
+    <img src='https://tse2-mm.cn.bing.net/th/id/OIP-C.lAFl1fRHcW_WAuRPNttVVwHaHa?w=181&h=181&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3' alt='lsh' width='80px' height='80px'>
+    <h2>我的小屋</h2>
+    <p>欢迎来到这里</p>
+    <button class="enter-btn" onclick="goMessagePage()">进入留言板</button>
+  </div>
+  <div id="messagePage">
+    <button class="back-btn" onclick="goHome()">← 返回主页</button>
+    <div class="card">
+      <h3>写下留言</h3>
+      <select id="groupSelect">
+        <option value="高中同学">高中同学</option>
+        <option value="大学同学">大学同学</option>
+      </select>
+      <input type="text" id="virtualName" placeholder="虚拟昵称">
+      <input type="text" id="realName" placeholder="真实姓名">
+      <textarea id="msgContent" rows="4" placeholder="留言内容"></textarea>
+      <button class="submit-btn" onclick="submitMessage()">提交留言</button>
     </div>
-    <div class="container">
-        <div class="card">
-    <p>欢迎来到零食小屋，不要偷吃零食！！！</p>
-    </div>
-    
-        <div class="card">
-            <h3>小屋留言板</h3>
-<div class="item">
-  <label>选择板块</label>
-  <select id="categorySelect">
-    <option value="sheep">羊村</option>
-    <option value="food">美食街</option>
-    <option value="soul">许愿池</option>
-    <option value="cos">cos区</option>
-  </select>
-</div>
-<div class="item">
-    <label>虚拟昵称（请乱取名！）</label>
-    <input type="text" id="nickname" placeholder="起一个好玩的匿名昵称">
-</div>
-<div class="item">
-    <label>真实昵称（3天后揭晓哦）</label>
-    <input type="text" id="realname" placeholder="填写你的真实姓名">
-</div>
-<div class="item">
-    <label>留言内容</label>
-    <textarea id="content" placeholder="在这里写下留言..."></textarea>
-</div>
-            <div>
-                <button id="submitBtn">提交留言</button>
-            </div>
-        </div>
-        <div class="card">
-            <h3>留言列表</h3>
-            <div class="tab-group">
-              <button class="tab-btn" data-filter="">全部留言</button>
-              <button class="tab-btn" data-filter="food">美食街</button>
-              <button class="tab-btn" data-filter="sheep">羊村</button>
-              <button class="tab-btn" data-filter="cos">cos区</button>
-              <button class="tab-btn" data-filter="soul">许愿池</button>
-              
-            </div>
-            <div id="msgList">
-            </div>
-        </div>
-    </div>
-    
-    <div>
-      <a href="#top">跳到页面顶部</a>
-    </div>
-
-<!--回复弹窗：这里style只保留display:none！！-->
-<div id="replyModal" style="display:none;">
-  <div style="background:#fff;padding:20px;border-radius:12px;width:90%;max-width:500px;">
-    <h4>回复这条留言</h4>
-    <div class="item">
-        <label>回复虚拟昵称</label>
-        <input type="text" id="replyNickname" placeholder="你的虚拟昵称">
-    </div>
-    <div class="item">
-        <label>回复真实昵称（3天后揭晓）</label>
-        <input type="text" id="replyRealname" placeholder="填写真实昵称">
-    </div>
-    <textarea id="replyText" style="width:100%;padding:10px;border:1px solid #e2d5d3;border-radius:8px;min-height:80px;" placeholder="写下回复内容"></textarea>
-    <div style="margin-top:12px;display:flex;gap:10px;">
-      <button id="sendReplyBtn">提交回复</button>
-      <button id="closeReplyBtn">取消</button>
-    </div>
+    <div id="msgList"></div>
   </div>
 </div>
+<div id="replyModal">
+  <div class="modal-inner">
+    <h4>回复留言</h4>
+    <textarea id="replyContent" rows="4"></textarea>
+    <input type="hidden" id="replyTargetId">
+    <button onclick="openReplyModal()">发送</button>
+    <button onclick="closeReplyModal()">取消</button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-    const SUPABASE_URL = "https://rxfnfhfmovnfsgsfojon.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_7YU1IGHuevQYg-x-oc1S2A_LmkhY_-1";
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    const nicknameInput = document.getElementById('nickname');
-    const realnameInput = document.getElementById('realname');
-    const contentInput = document.getElementById('content');
-    const submitBtn = document.getElementById('submitBtn');
-    const msgList = document.getElementById('msgList');
-    const categorySelect = document.getElementById('categorySelect');
-    const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
-    let currentFilter = "";
-
-    //回复弹窗DOM
-    const replyModal = document.getElementById('replyModal');
-    const replyNicknameInput = document.getElementById('replyNickname');
-    const replyRealnameInput = document.getElementById('replyRealname');
-    const replyText = document.getElementById('replyText');
-    const sendReplyBtn = document.getElementById('sendReplyBtn');
-    const closeReplyBtn = document.getElementById('closeReplyBtn');
-    let replyingToId = null;
-
-    function updateTabActive(){
-        document.querySelectorAll('.tab-btn').forEach(btn=>{
-            if(btn.dataset.filter === currentFilter){
-                btn.classList.add('active')
-            }else{
-                btn.classList.remove('active')
-            }
-        })
+window.goMessagePage = function(){
+  document.getElementById('homePage').style.display = "none";
+  document.getElementById('messagePage').style.display = "block";
+  loadMessages();
+}
+window.goHome = function(){
+  document.getElementById('homePage').style.display = "flex";
+  document.getElementById('messagePage').style.display = "none";
+}
+window.openReplyModal = function(msgId){
+  document.getElementById("replyTargetId").value = msgId;
+  document.getElementById("replyContent").value = "";
+  document.getElementById("replyModal").style.display = "flex";
+}
+window.closeReplyModal = function(){
+  document.getElementById("replyModal").style.display = "none";
+}
+async function loadMessages(){
+  const {data, error} = await supabase
+    .from('messages')
+    .select('*')
+    .order('created_at', {asc:false});
+  if(error){
+    console.error(error);
+    return;
+  }
+  const msgListDom = document.getElementById("msgList");
+  msgListDom.innerHTML = "";
+  const now = new Date();
+  const threeDayMs = 3 * 24 * 60 * 60 * 1000;
+  data.forEach(msg=>{
+    const createTime = new Date(msg.created_at);
+    const diff = now - createTime;
+    let showName;
+    if(diff > threeDayMs){
+      showName = `${msg.virtual_name}（${msg.real_name}）`;
+    }else{
+      showName = msg.virtual_name;
     }
-    
-    document.querySelectorAll('.tab-btn').forEach(btn=>{
-        btn.onclick = function(){
-            currentFilter = this.dataset.filter;
-            render();
-            updateTabActive();
-        }
-    })
-
-    //打开回复弹窗
-    function openReplyModal(mainId){
-        replyingToId = mainId;
-        replyNicknameInput.value = "";
-        replyRealnameInput.value = "";
-        replyText.value = "";
-        replyModal.classList.add("open");
-    }
-    //关闭弹窗
-    function closeReplyModal(){
-        replyingToId = null;
-        replyModal.classList.remove("open");
-    }
-    closeReplyBtn.onclick = closeReplyModal;
-
-    //提交回复
-    sendReplyBtn.onclick = async function(){
-        const rNick = replyNicknameInput.value.trim();
-        const rReal = replyRealnameInput.value.trim();
-        const rContent = replyText.value.trim();
-        if(!rNick || !rReal || !rContent){
-            alert("虚拟昵称、真实昵称、回复内容不能为空！");
-            return;
-        }
-        const {error} = await supabase.from("messages").insert([{
-            nickname: rNick,
-            realname: rReal,
-            content: rContent,
-            category: "",
-            reply_to: replyingToId
-        }])
-        if(error){
-            alert("回复失败："+error.message)
-        }else{
-            closeReplyModal();
-            render();
-        }
-    }
-
-    async function render(){
-        const {data, error} = await supabase
-            .from("messages")
-            .select("*")
-            .order("created_at", {ascending: false});
-        console.log("拿到的数据：", data);
-        console.log("错误：", error);
-        if(error){
-            console.error(error);
-            alert("读取留言失败！");
-            return;
-        }
-        msgList.innerHTML = "";
-        const now = Date.now();
-        // 筛选板块
-        let filteredData = data;
-        if(currentFilter !== ""){
-            filteredData = data.filter(item => item.category === currentFilter);
-        }
-
-        //只渲染主留言（reply_to为空）
-        filteredData.forEach(item=>{
-            if(item.reply_to) return;
-
-            let div = document.createElement("div");
-            div.className = "msg-item";
-            let categoryText = "";
-            if(item.category === "sheep") categoryText = "【羊村】";
-            if(item.category === "food") categoryText = "【美食街】";
-            if(item.category === "soul") categoryText = "【许愿池】";
-            if(item.category === "cos") categoryText = "【cos区】";
-            let showName;
-            if (!item.nickname) {
-                showName = (item.name || "匿名") + "（旧留言）" + categoryText;
-            } else {
-                const createTime = new Date(item.created_at).getTime();
-                const diff = now - createTime;
-                if(diff >= THREE_DAY_MS){
-                    showName = `${item.nickname}（${item.realname}）` + categoryText;
-                }else{
-                    showName = item.nickname + "（匿名中）" + categoryText;
-                }
-            }
-
-            //查找这条主留言所有回复
-            const replies = data.filter(r => r.reply_to === item.id);
-            let replyHtml = "";
-            replies.forEach(reply=>{
-                let replyShowName;
-                const replyCreateTime = new Date(reply.created_at).getTime();
-                const replyDiff = now - replyCreateTime;
-                if(replyDiff >= THREE_DAY_MS){
-                    replyShowName = `${reply.nickname}（${reply.realname}）`;
-                }else{
-                    replyShowName = reply.nickname + "（匿名中）";
-                }
-                replyHtml += `
-                <div class="reply-block">
-                    <div class="reply-name">${replyShowName}</div>
-                    <div class="reply-time">${new Date(reply.created_at).toLocaleString()}</div>
-                    <div class="reply-content">${reply.content}</div>
-                </div>
-                `
-            })
-
-            div.innerHTML = `
-             <div class="msg-name">${showName}</div>
-             <div class="msg-time">${new Date(item.created_at).toLocaleString()}</div>
-             <div class="msg-content">${item.content}</div>
-             <button class="replyBtn" data-id="${item.id}">回复</button>
-             ${replyHtml}
-            `
-            msgList.appendChild(div);
-        })
-
-        //绑定所有回复按钮点击事件
-        document.querySelectorAll('.replyBtn').forEach(btn=>{
-            btn.onclick = function(){
-                openReplyModal(this.dataset.id)
-            }
-        })
-        updateTabActive();
-    }
-    
-    submitBtn.onclick = async function(){
-        let nickname = nicknameInput.value.trim();
-        let realname = realnameInput.value.trim();
-        let content = contentInput.value.trim();
-        if(!nickname || !realname || !content){
-            alert("虚拟昵称、真实昵称、留言内容都不能为空！");
-            return;
-        }
-        const {error} = await supabase
-            .from("messages")
-            .insert([{ 
-                nickname, 
-                realname, 
-                content,
-                category: categorySelect.value 
-            }]);
-        if(error){
-            alert("提交失败：" + error.message);
-        }else{
-            nicknameInput.value = "";
-            realnameInput.value = "";
-            contentInput.value = "";
-            render();
-        }
-    }
-    render();
-    updateTabActive();
+    const html = `
+      <div class="msg-bubble">
+        <div><strong>${showName}</strong> · ${msg.group}</div>
+        <div>${msg.content}</div>
+        <div style="margin-top:8px">
+          <button onclick="openReplyModal(${msg.id})">回复</button>
+        </div>
+      </div>
+    `;
+    msgListDom.innerHTML += html;
+  })
+}
+window.submitMessage = async function(){
+  const group = document.getElementById("groupSelect").value;
+  const virtualName = document.getElementById("virtualName").value.trim();
+  const realName = document.getElementById("realName").value.trim();
+  const content = document.getElementById("msgContent").value.trim();
+  if(!virtualName || !content){
+    alert("虚拟昵称和留言不能为空");
+    return;
+  }
+  const {error} = await supabase.from('messages').insert([{
+    group: group,
+    virtual_name: virtualName,
+    real_name: realName,
+    content: content,
+    created_at: new Date()
+  }])
+  if(error){
+    alert("提交失败："+error.message);
+    console.error(error);
+  }else{
+    alert("留言成功！");
+    document.getElementById("virtualName").value = "";
+    document.getElementById("realName").value = "";
+    document.getElementById("msgContent").value = "";
+    loadMessages();
+  }
+}
+window.sendReply = async function(){
+  const replyTo = document.getElementById("replyTargetId").value;
+  const content = document.getElementById("replyContent").value.trim();
+  if(!content) return;
+  const {error} = await supabase.from('messages').insert([{
+    reply_to: replyTo,
+    content: content,
+    virtual_name: "回复用户",
+    real_name: "",
+    group: "",
+    created_at: new Date()
+  }])
+  if(error){
+    alert(error.message);
+  }else{
+    closeReplyModal();
+    loadMessages();
+  }
+}
 </script>
-  </body>
+</body>
 </html>
