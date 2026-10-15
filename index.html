@@ -105,6 +105,7 @@ input:focus,textarea:focus{
     line-height:1.6;
     color:#5b5150;
 }
+/*回复气泡样式*/
 .reply-block{
     margin-top:12px;
     padding:10px 14px;
@@ -139,6 +140,7 @@ input:focus,textarea:focus{
 .replyBtn:hover{
     background:#ddd2d1;
 }
+/*弹窗样式*/
 #replyModal{
     display:none;
     position:fixed;
@@ -147,9 +149,6 @@ input:focus,textarea:focus{
     align-items:center;
     justify-content:center;
     z-index:999;
-}
-#replyModal.open{
-    display:flex;
 }
 #replyModal textarea{
     width:100%;
@@ -226,7 +225,8 @@ input:focus,textarea:focus{
       <a href="#top">跳到页面顶部</a>
     </div>
 
-<div id="replyModal" style="display:none;">
+<!--回复弹窗-->
+<div id="replyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;z-index:999;">
   <div style="background:#fff;padding:20px;border-radius:12px;width:90%;max-width:500px;">
     <h4>回复这条留言</h4>
     <div class="item">
@@ -260,6 +260,7 @@ input:focus,textarea:focus{
     const THREE_DAY_MS = 3 * 24 * 60 * 60 * 1000;
     let currentFilter = "";
 
+    //回复弹窗DOM
     const replyModal = document.getElementById('replyModal');
     const replyNicknameInput = document.getElementById('replyNickname');
     const replyRealnameInput = document.getElementById('replyRealname');
@@ -286,19 +287,22 @@ input:focus,textarea:focus{
         }
     })
 
+    //打开回复弹窗
     function openReplyModal(mainId){
         replyingToId = mainId;
         replyNicknameInput.value = "";
         replyRealnameInput.value = "";
         replyText.value = "";
-        replyModal.classList.add("open");
+        replyModal.style.display = "flex";
     }
+    //关闭弹窗
     function closeReplyModal(){
         replyingToId = null;
-        replyModal.classList.remove("open");
+        replyModal.style.display = "none";
     }
     closeReplyBtn.onclick = closeReplyModal;
 
+    //提交回复
     sendReplyBtn.onclick = async function(){
         const rNick = replyNicknameInput.value.trim();
         const rReal = replyRealnameInput.value.trim();
@@ -336,11 +340,13 @@ input:focus,textarea:focus{
         }
         msgList.innerHTML = "";
         const now = Date.now();
+        // 筛选板块
         let filteredData = data;
         if(currentFilter !== ""){
             filteredData = data.filter(item => item.category === currentFilter);
         }
 
+        //只渲染主留言（reply_to为空）
         filteredData.forEach(item=>{
             if(item.reply_to) return;
 
@@ -364,6 +370,7 @@ input:focus,textarea:focus{
                 }
             }
 
+            //查找这条主留言所有回复
             const replies = data.filter(r => r.reply_to === item.id);
             let replyHtml = "";
             replies.forEach(reply=>{
